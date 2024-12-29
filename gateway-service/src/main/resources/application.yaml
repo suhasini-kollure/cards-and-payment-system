@@ -33,7 +33,7 @@ spring:
         - id: security-service
           uri: lb://SECURITY-SERVICE
           predicates:
-            - Path=/security/**
+            - Path=/login
           filters:
             - AuthenticationFilter
 

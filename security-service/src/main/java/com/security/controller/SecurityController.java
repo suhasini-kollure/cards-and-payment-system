@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("security")
+@RequestMapping
 @Tag(name = "Security Controller", description = "Controller for security operations")
 public class SecurityController {
 
