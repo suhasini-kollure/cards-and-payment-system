@@ -1,0 +1,38 @@
+#Application properties
+server:
+  port: 8084
+
+spring:
+  application:
+    name: security-service
+
+  #DB connection properties
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ccp-ms
+    username: root
+    password: root
+
+  #JPA Properties
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    database-platform: org.hibernate.dialect.MySQLDialect
+
+#Eureka server registry  properties
+eureka:
+  client:
+    service-url:
+      default-zone: http://localhost:8761/eureka
+  instance:
+    prefer-ip-address: true
+    hostname: localhost
+
+#Actuator properties
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - "*"

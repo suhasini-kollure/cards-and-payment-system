@@ -1,0 +1,160 @@
+package com.payment.service;
+
+import com.payment.dto.DateFilter;
+import com.payment.model.Payment;
+import com.payment.repository.PaymentRepository;
+import jakarta.ws.rs.NotFoundException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@Slf4j
+@Transactional
+public class PaymentServiceImpl implements PaymentService {
+
+    private final PaymentRepository paymentRepository;
+
+    @Autowired
+    public PaymentServiceImpl(PaymentRepository paymentRepository) {
+        this.paymentRepository = paymentRepository;
+    }
+
+    @Override
+    public Payment processPayment(Payment payment) {
+
+        try {
+            if (payment.getCard().getExpirationDate().isAfter(LocalDate.now())) {
+                if ("Open".equals(payment.getStatus())) {
+                    log.info("Checking for existing Open transaction.");
+                    Optional<Payment> existingOpenPayment =
+                            paymentRepository.findByCardAndStatus(payment.getCard(), "Open");
+                    if (existingOpenPayment.isPresent()
+                            && existingOpenPayment
+                                    .get()
+                                    .getTimestamp()
+                                    .isAfter(LocalDateTime.now().minusMinutes(5))) {
+                        log.error("Transaction failed, One existing transaction is Open.");
+                        payment.setStatus("Failure");
+                        payment.setTimestamp(LocalDateTime.now());
+                        return paymentRepository.save(payment);
+                    }
+                }
+            } else {
+                throw new IllegalStateException("Card is expired!!!");
+            }
+
+            payment.setStatus("Closed");
+            payment.setTimestamp(LocalDateTime.now());
+            log.info("Payment successful, and transaction is closed.");
+            return paymentRepository.save(payment);
+
+        } catch (Exception e) {
+            log.error("Something went wrong...");
+            throw new IllegalArgumentException(e.getMessage());
+        }
+    }
+
+    @Override
+    public Payment getTransaction(String transactionId) {
+        Optional<Payment> optionalPayment = paymentRepository.findById(transactionId);
+        if (optionalPayment.isPresent()) {
+            Payment payment = optionalPayment.get();
+            log.info("Transaction found with transactionId : {}", transactionId);
+            return payment;
+        } else {
+            throw new NotFoundException(String.format("Transaction not found with transactionId : %s", transactionId));
+        }
+    }
+
+    @Override
+    public List<Payment> getAllTransactionsOfCard(String cardNumber) {
+        List<Optional<Payment>> optionalPayments = paymentRepository.findByCardCardNumber(cardNumber);
+        if (optionalPayments.isEmpty()) {
+            log.error("Transactions not found with cardNumber : {}", cardNumber);
+            throw new NotFoundException(String.format("Transactions not found with cardNumber : %s", cardNumber));
+        } else {
+            List<Payment> payments = optionalPayments.stream()
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .toList();
+            log.info("Transactions found for cardNumber : {}", cardNumber);
+            return payments;
+        }
+    }
+
+    @Override
+    public List<Payment> getAllTransactionsOfCustomer(String customerId) {
+        List<Optional<Payment>> optionalPayments = paymentRepository.findByCustomerCustomerId(customerId);
+        if (optionalPayments.isEmpty()) {
+            log.error("Transactions not found with customerId : {}", customerId);
+            throw new NotFoundException(String.format("Transactions not found with customerId : %s", customerId));
+        } else {
+            List<Payment> payments = optionalPayments.stream()
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .toList();
+            log.info("Transactions found for customerId : {}", customerId);
+            return payments;
+        }
+    }
+
+    @Override
+    public List<Payment> getAllSpecificTransactionsOfCard(String cardNumber, DateFilter dateFilter) {
+        List<Optional<Payment>> optionalPayments = paymentRepository.findByCardCardNumberAndTimestampBetween(
+                cardNumber, dateFilter.getFromDateTime(), dateFilter.getToDateTime());
+        if (optionalPayments.isEmpty()) {
+            log.error(
+                    "Transactions not found for cardNumber {}, from {} to {}",
+                    cardNumber,
+                    dateFilter.getFromDateTime(),
+                    dateFilter.getToDateTime());
+            throw new NotFoundException(String.format(
+                    "Transactions not found for cardNumber %S, from %s to %S",
+                    cardNumber, dateFilter.getFromDateTime(), dateFilter.getToDateTime()));
+        } else {
+            List<Payment> payments = optionalPayments.stream()
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .toList();
+            log.info(
+                    "Transactions found for cardNumber {}, from {} to {}",
+                    cardNumber,
+                    dateFilter.getFromDateTime(),
+                    dateFilter.getToDateTime());
+            return payments;
+        }
+    }
+
+    @Override
+    public List<Payment> getAllSpecificTransactionsOfCustomer(String customerId, DateFilter dateFilter) {
+        List<Optional<Payment>> optionalPayments = paymentRepository.findByCustomerCustomerIdAndTimestampBetween(
+                customerId, dateFilter.getFromDateTime(), dateFilter.getToDateTime());
+        if (optionalPayments.isEmpty()) {
+            log.error(
+                    "Transactions not found with customerId {}, from {} to {}",
+                    customerId,
+                    dateFilter.getFromDateTime(),
+                    dateFilter.getToDateTime());
+            throw new NotFoundException(String.format(
+                    "Transactions not found with customerId %s, from %s to %s",
+                    customerId, dateFilter.getFromDateTime(), dateFilter.getToDateTime()));
+        } else {
+            List<Payment> payments = optionalPayments.stream()
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .toList();
+            log.info(
+                    "Transactions found for customerId {}, from {} to {}",
+                    customerId,
+                    dateFilter.getFromDateTime(),
+                    dateFilter.getToDateTime());
+            return payments;
+        }
+    }
+}

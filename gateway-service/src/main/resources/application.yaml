@@ -1,0 +1,55 @@
+#Application properties
+server:
+  port: 8080
+spring:
+  application:
+    name: gateway-service
+
+  #Gateway properties
+  cloud:
+    gateway:
+      routes:
+        - id: customer-api
+          uri: lb://CUSTOMER-API
+          predicates:
+            - Path=/customer/**
+          filters:
+            - AuthenticationFilter
+
+        - id: card-api
+          uri: lb://CARD-API
+          predicates:
+            - Path=/card/**
+          filters:
+            - AuthenticationFilter
+
+        - id: payment-api
+          uri: lb://PAYMENT-API
+          predicates:
+            - Path=/payment/**
+          filters:
+            - AuthenticationFilter
+
+        - id: security-service
+          uri: lb://SECURITY-SERVICE
+          predicates:
+            - Path=/security/**
+          filters:
+            - AuthenticationFilter
+
+#Server registry properties
+eureka:
+  client:
+    service-url:
+      default-zone: http://localhost:8761/eureka
+  instance:
+    prefer-ip-address: true
+    hostname: localhost
+
+#Actuator properties
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - "*"
