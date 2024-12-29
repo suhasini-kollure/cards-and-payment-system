@@ -63,6 +63,7 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setAccountNumber(registerCustomer.getAccountNumber());
         customer.setIfsc(registerCustomer.getIfsc());
         customer.setBranch(registerCustomer.getBranch());
+        log.info("Creating new customer with customerId : {}", registerCustomer.getCustomerId());
         customerRepository.save(customer);
 
         Credentials credentials = new Credentials();
@@ -70,9 +71,11 @@ public class CustomerServiceImpl implements CustomerService {
         credentials.setPhoneNumber(registerCustomer.getPhoneNumber());
         credentials.setPassword(passwordEncoder.encode(registerCustomer.getPassword()));
         credentials.setCustomer(customer);
+        log.info("Creating credentials for customerId : {}", registerCustomer.getCustomerId());
         credentialsRepository.save(credentials);
 
         customer.setCredentials(credentials);
+        log.info("Saving customer with customerId : {}", registerCustomer.getCustomerId());
         return customerRepository.save(customer);
     }
 
@@ -169,8 +172,10 @@ public class CustomerServiceImpl implements CustomerService {
     public Customer getCustomerByCardNumber(String cardNumber) {
         Optional<Customer> optionalCustomer = customerRepository.findCustomerByCardsCardNumber(cardNumber);
         if (optionalCustomer.isPresent()) {
+            log.info("Customer found with cardNumber : {}", cardNumber);
             return optionalCustomer.get();
         } else {
+            log.error("Customer not found with cardNumber : {}", cardNumber);
             throw new NotFoundException(String.format("Customer not found with cardNumber : %s", cardNumber));
         }
     }

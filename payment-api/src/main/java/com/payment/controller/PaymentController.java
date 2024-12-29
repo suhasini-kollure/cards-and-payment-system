@@ -6,6 +6,7 @@ import com.payment.model.Customer;
 import com.payment.model.Payment;
 import com.payment.service.PaymentService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 @RestController
 @RequestMapping("payment")
+@Tag(name = "Payment Controller", description = "Controller for payment operations")
 public class PaymentController {
 
     private final PaymentService paymentService;

@@ -42,9 +42,10 @@ public class CardServiceImpl implements CardService {
         ResponseEntity<Customer> customer = restTemplate.exchange(
                 "http://localhost:8081/customer/getCustomerById/" + customerId, HttpMethod.GET, body, Customer.class);
 
+        log.info("Setting customer details to card and saving the card to the repository.");
         card.setCustomer(customer.getBody());
         Card savedCard = cardRepository.save(card);
-        log.info("Card saved in DB with cardNumber : {}", card.getCardNumber());
+        log.info("Card saved successfully with cardNumber : {}", savedCard.getCardNumber());
         return savedCard;
     }
 
@@ -76,13 +77,14 @@ public class CardServiceImpl implements CardService {
             card.setExpirationDate(updateCard.getExpirationDate());
         }
         Card savedCard = cardRepository.save(card);
-        log.info("Card updated for cardNumber : {}", cardNumber);
+        log.info("Card updated for cardNumber : {}", savedCard.getCardNumber());
         return savedCard;
     }
 
     @Override
     public String deleteCard(String cardNumber) {
         Card card = getCard(cardNumber);
+        cardRepository.delete(card);
         log.info("Card deleted with cardNumber : {}", card.getCardNumber());
         return "Card deleted with card number : " + card.getCardNumber();
     }

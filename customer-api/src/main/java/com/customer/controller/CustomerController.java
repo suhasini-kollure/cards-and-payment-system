@@ -1,15 +1,16 @@
 package com.customer.controller;
 
-import com.customer.dto.*;
+import com.customer.dto.RegisterCustomer;
+import com.customer.dto.UpdateCustomer;
 import com.customer.model.Customer;
 import com.customer.service.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 @RestController
 @RequestMapping("customer")
@@ -17,12 +18,10 @@ import org.springframework.web.client.RestTemplate;
 public class CustomerController {
 
     private final CustomerService customerService;
-    private final RestTemplate restTemplate;
 
     @Autowired
-    public CustomerController(CustomerService customerService, RestTemplate restTemplate) {
+    public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
-        this.restTemplate = restTemplate;
     }
 
     @Operation(summary = "Save Customer", description = "Endpoint to save a new customer")
@@ -32,7 +31,7 @@ public class CustomerController {
         return new ResponseEntity<>(savedCustomer, HttpStatus.OK);
     }
 
-    @Operation(summary = "Get Customer", description = "Endpoint to get a already existing customer")
+    @Operation(summary = "Get Customer", description = "Endpoint to get a already existing customer by customerId")
     @GetMapping("/getCustomerById/{customerId}")
     public ResponseEntity<Customer> getCustomerById(@PathVariable("customerId") String customerId) {
         Customer customer = customerService.getCustomerById(customerId);
@@ -55,7 +54,7 @@ public class CustomerController {
         return new ResponseEntity<>(customerByPhoneNumber, HttpStatus.OK);
     }
 
-    @Operation(summary = "Update Customer", description = "Endpoint to update a existing customer by customer id")
+    @Operation(summary = "Update Customer", description = "Endpoint to update a existing customer by customerId")
     @PatchMapping("/update/{customerId}")
     public ResponseEntity<Customer> updateCustomer(
             @PathVariable("customerId") String customerId, @Valid @RequestBody UpdateCustomer updateCustomer) {
@@ -63,7 +62,7 @@ public class CustomerController {
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
-    @Operation(summary = "Delete Customer", description = "Endpoint to delete a customer by customer id")
+    @Operation(summary = "Delete Customer", description = "Endpoint to delete a customer by customerId")
     @DeleteMapping("/delete/{customerId}")
     public ResponseEntity<String> deleteCustomer(@PathVariable("customerId") String customerId) {
         String deletedCustomer = customerService.deleteCustomer(customerId);

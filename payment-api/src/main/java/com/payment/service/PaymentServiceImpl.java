@@ -46,6 +46,8 @@ public class PaymentServiceImpl implements PaymentService {
                     }
                 }
             } else {
+                log.error(
+                        "Card is expired for cardNumber: {}", payment.getCard().getCardNumber());
                 throw new IllegalStateException("Card is expired!!!");
             }
 
@@ -54,6 +56,12 @@ public class PaymentServiceImpl implements PaymentService {
             log.info("Payment successful, and transaction is closed.");
             return paymentRepository.save(payment);
 
+        } catch (IllegalStateException e) {
+            log.error(
+                    "Error processing payment for cardNumber: {}. Error: {}",
+                    payment.getCard().getCardNumber(),
+                    e.getMessage());
+            throw e;
         } catch (Exception e) {
             log.error("Something went wrong...");
             throw new IllegalArgumentException(e.getMessage());
@@ -68,6 +76,7 @@ public class PaymentServiceImpl implements PaymentService {
             log.info("Transaction found with transactionId : {}", transactionId);
             return payment;
         } else {
+            log.error("Transaction not found with transactionId : {}", transactionId);
             throw new NotFoundException(String.format("Transaction not found with transactionId : %s", transactionId));
         }
     }

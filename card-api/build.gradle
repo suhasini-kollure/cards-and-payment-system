@@ -91,8 +91,8 @@ sonar {
 		property "sonar.host.url", "http://localhost:9000"
 		property "sonar.token", System.getenv("SONAR_TOKEN")
 		property "sonar.organization", "ccp-ms"
-		property "sonar.scm.disabled", "true"
-//		property "sonar.scm.provider", "git"
+//		property "sonar.scm.disabled", "true"
+		property "sonar.scm.provider", "git"
 		property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
 	}
 }
