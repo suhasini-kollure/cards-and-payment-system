@@ -1,13 +1,12 @@
 package com.customer.configuration;
 
+import java.util.Map;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.Map;
 
 @Configuration
 public class AppConfig {

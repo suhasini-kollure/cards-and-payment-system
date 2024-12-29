@@ -7,13 +7,12 @@ import com.customer.model.Customer;
 import com.customer.repository.CredentialsRepository;
 import com.customer.repository.CustomerRepository;
 import jakarta.ws.rs.NotFoundException;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @Slf4j

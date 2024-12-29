@@ -9,7 +9,12 @@ import org.springframework.stereotype.Component;
 public class RouteValidator {
 
     private static final List<String> OPEN_API_ENDPOINTS = List.of(
-            "/customer/save", "/security/login", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/actuator/**");
+            "/customer/save",
+            "/security/login",
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/actuator/**");
 
     public Predicate<ServerHttpRequest> isSecured = serverHttpRequest -> {
         String path = serverHttpRequest.getURI().getPath();

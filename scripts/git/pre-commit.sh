@@ -45,10 +45,9 @@ EOF
 	exit 1
 fi
 
-./eureka-server/gradlew check --continue
-./customer-api/gradlew check --continue
-./card-api/gradlew check --continue
-./payment-api/gradlew check --continue
-./security-service/gradlew check --continue
-./gateway-service/gradlew check --continue
-
+# Run Gradle checks for each service
+services=("eureka-server" "customer-api" "card-api" "payment-api" "security-service" "gateway-service")
+for service in "${services[@]}"; do
+  echo "Running Gradle check for $service..."
+  (cd "$service" && ./gradlew check --continue)
+done

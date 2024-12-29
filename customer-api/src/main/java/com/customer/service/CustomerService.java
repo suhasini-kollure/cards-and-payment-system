@@ -19,5 +19,4 @@ public interface CustomerService {
     String deleteCustomer(String customerId);
 
     Customer getCustomerByCardNumber(String cardNumber);
-
 }

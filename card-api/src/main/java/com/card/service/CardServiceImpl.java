@@ -5,14 +5,13 @@ import com.card.model.Card;
 import com.card.model.Customer;
 import com.card.repository.CardRepository;
 import jakarta.ws.rs.NotFoundException;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.Optional;
 
 @Service
 @Slf4j
