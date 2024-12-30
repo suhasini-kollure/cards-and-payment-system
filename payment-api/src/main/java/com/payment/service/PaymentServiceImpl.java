@@ -56,14 +56,8 @@ public class PaymentServiceImpl implements PaymentService {
             log.info("Payment successful, and transaction is closed.");
             return paymentRepository.save(payment);
 
-        } catch (IllegalStateException e) {
-            log.error(
-                    "Error processing payment for cardNumber: {}. Error: {}",
-                    payment.getCard().getCardNumber(),
-                    e.getMessage());
-            throw e;
         } catch (Exception e) {
-            log.error("Something went wrong...");
+            log.error("Something went wrong: {}", e.getMessage(), e);
             throw new IllegalArgumentException(e.getMessage());
         }
     }
